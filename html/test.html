@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Test websocket</title>
+</head>
+
+<body>
+    Client
+    <input id="nickInput" type="text">
+    <button onclick="sendMsg()">Send message</button>
+</body>
+<script>
+    const socket = new WebSocket('ws://localhost:5000');
+
+    socket.addEventListener('open', function (event) {
+        console.log('Connected to server!');
+        let message = { msg_code: "connect", nick: document.getElementById("nickInput") }
+        socket.send(JSON.stringify(message))
+    });
+
+    socket.addEventListener('close', function (event) {
+        console.log('Disconnected from server!');
+    });
+
+    socket.addEventListener('message', function (event) {
+        console.log('Message from server: ', event.data);
+    });
+
+    const sendMsg = () => {
+        socket.send('Hello from client!');
+    }
+</script>
+
+</html>
