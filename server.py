@@ -4,8 +4,13 @@ import json
 
 PLAYERS = set()
 
-def add_to_set(websocket):
-    l = len(PLAYERS)
+async def on_connect(websocket):
+    if len(PLAYERS) < 4:
+        await register_player(websocket)
+        # Welcome message is sent here
+        await websocket.send("welcome_message")
+    else:
+        print("Session is full")
     PLAYERS.add(websocket)
     return len(PLAYERS) != l
 
