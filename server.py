@@ -17,23 +17,21 @@ async def register_player(websocket):
     message = "player_pos"
     await notify_players(message)
 
-async def notify_players(websocket):
+async def notify_players(message):
     if PLAYERS:
-        message = 'test'
         await asyncio.wait([player.send(message) for player in PLAYERS])
 
-async def add_player(websocket):
-    print("tetystr")
-    if len(PLAYERS) < 4:
-        if PLAYERS.add(websocket):
-            await notify_players(websocket)
+async def create_game():
+    pass
 
 async def server(websocket, path):
+    create_game()
+
     async for message in websocket:
         data = json.loads(message)
         if data["msg_code"] == "connect":
-            # Add new player on connect
-            await add_player(websocket)
+            # Add new player
+            await on_connect(websocket)
             print(f'Number of players: {len(PLAYERS)}')
         elif data["msg_code"] == "player_move":
             pass
@@ -45,7 +43,7 @@ async def server(websocket, path):
         else:
             print("Unknown message.")
 
-        await websocket.send(f'Server got your message: {message}')
+        
 
 
 start_server = websockets.serve(server, "localhost", 5000)
