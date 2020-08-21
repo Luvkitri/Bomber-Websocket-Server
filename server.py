@@ -11,8 +11,11 @@ async def on_connect(websocket):
         await websocket.send("welcome_message")
     else:
         print("Session is full")
+
+async def register_player(websocket):
     PLAYERS.add(websocket)
-    return len(PLAYERS) != l
+    message = "player_pos"
+    await notify_players(message)
 
 async def notify_players(websocket):
     if PLAYERS:
