@@ -1,19 +1,22 @@
 import asyncio
 import websockets
 import json
+import uuid
+from game import Player
 
-PLAYERS = set()
+PLAYERS = dict()
 
-async def on_connect(websocket):
+async def on_connect(data, websocket):
     if len(PLAYERS) < 4:
-        await register_player(websocket)
+        await register_player(data)
         # Welcome message is sent here
         await websocket.send("welcome_message")
     else:
         print("Session is full")
 
-async def register_player(websocket):
-    PLAYERS.add(websocket)
+async def register_player(data):
+    # Create a player object
+    PLAYERS[uuid.uuid4()] = Player(data["nick"])
     message = "player_pos"
     await notify_players(message)
 
@@ -31,7 +34,7 @@ async def server(websocket, path):
         data = json.loads(message)
         if data["msg_code"] == "connect":
             # Add new player
-            await on_connect(websocket)
+            await on_connect(data, websocket)
             print(f'Number of players: {len(PLAYERS)}')
         elif data["msg_code"] == "player_move":
             pass
