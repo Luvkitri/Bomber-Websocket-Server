@@ -6,7 +6,6 @@ from game import Player, Game
 
 PLAYERS = dict()
 
-
 class Server():
     def __init__(self):
         self.game = self.create_game()
@@ -15,26 +14,25 @@ class Server():
         if len(PLAYERS) < 4:
             # Register player
             client_uid = uuid.uuid4()
-            PLAYERS[client_uid] = Player(data['nick'], *self.game.possible_player_pos.pop())
+            PLAYERS[client_uid] = Player(data['nick'], *self.game.possible_player_pos.pop(), websocket)
 
             # Send starting position to each player            
             await self.notify_players(PLAYERS[client_uid].get_pos())
 
             # Welcome message is sent here
-            await websocket.send('welcome_message')
+            await websocket.send(self.game.create_welcome_msg(data['nick'], client_uid, self.game.default_bombs_num))
         else:
             print("Session is full")
 
     async def notify_players(self, message):
         if PLAYERS:
-            await asyncio.wait([player.send(message) for player in PLAYERS])
+            await asyncio.wait([player.websocket.send(message) for player in PLAYERS.values()])
 
-    async def create_game(self):
+    def create_game(self):
         with open('json/config.json') as f:
             config = json.load(f)
         
-        return Game(config['map_size_x'], config['map_size_y'], config['box_number'], config['gift_number'])
-        
+        return Game(config['map_size_x'], config['map_size_y'], config['box_number'], config['gift_number'])      
 
     async def server(self, websocket, path):
         async for message in websocket:
@@ -56,7 +54,7 @@ class Server():
         
 
 server = Server()
-start_server = websockets.serve(server, "localhost", 5000)
+start_server = websockets.serve(server.server, "localhost", 5000)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
