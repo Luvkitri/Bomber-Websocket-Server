@@ -3,10 +3,11 @@ import random
 import uuid
 
 class Player():
-    def __init__(self, nick:str, x:int, y:int):
+    def __init__(self, nick:str, x:int, y:int, websocket):
         self.nick = nick
         self.x = x
         self.y = y
+        self.websocket = websocket
 
     def set_player_pos(self, x:int, y:int):
         self.x = x
@@ -24,8 +25,14 @@ class Player():
 
 class Box():
     def __init__(self, x:int, y:int):
-        self.box_uid = uuid.uuid4()
+        self.box_uid = str(uuid.uuid4())
         self.box_pos = [x, y]
+
+class Gift():
+    def __init__(self, x:int, y:int, gift_type:str):
+        self.gift_uid = str(uuid.uuid4())
+        self.gift_type = gift_type
+        self.gift_pos = [x, y]
 
 class Game():
     def __init__(self, map_size_x:int, map_size_y:int, box_number:int, gift_number:int):
@@ -35,26 +42,45 @@ class Game():
         self.gift_number = gift_number
         self.possible_player_pos = [(map_size_x/2, 0), (0, map_size_y/2), (map_size_x, map_size_y/2), (map_size_x/2, map_size_y)]
         self.box = self.generate_boxes()
+        self.gifts = self.generate_gifts()
+        self.default_bombs_num = 3
 
     def generate_boxes(self):
         boxes = []
         for _ in range(self.box_number):
             while True:
-                if pos := (random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y)) not in self.possible_player_pos:
+                if (pos := (random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y))) not in self.possible_player_pos:
                     boxes.append(Box(*pos))
                     break
 
         return boxes
 
+    # Dunno if gifts can only be placed where boxes are, or wherever
+    def generate_gifts(self):
+        gifts = []
+        gift_types = ["type1", "type2", "type3"]
+        for _ in range(self.gift_number):
+            while True:
+                if (pos := (random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y))) not in self.possible_player_pos:
+                    gifts.append(Gift(*pos, random.choice(gift_types)))
+                    break
+
+        return gifts
+
+    def obj_dict(self, obj):
+        return obj.__dict__
 
     def create_welcome_msg(self, nick:str, uid, bombs_amount:int):
         welcome_message = {
             "msg_code": "welcome_msg",
             "map_size_x": self.map_size_x,
             "map_size_y": self.map_size_y,
-            "client_uid": uid,
+            "client_uid": str(uid),
             "bombs_amount": bombs_amount,
             "current_score": 0,
-            "box": json.dumps(self.box, default=lambda x: x.__dict__)
+            "box": json.dumps(self.box, default=self.obj_dict),
+            "gifts": json.dumps(self.gifts, default=self.obj_dict)
         }
+        
+        return json.dumps(welcome_message)
 
