@@ -1,5 +1,6 @@
 import json
 import random
+import uuid
 
 class Player():
     def __init__(self, nick:str, x:int, y:int):
@@ -21,6 +22,11 @@ class Player():
 
         return json.dumps(pos_message)
 
+class Box():
+    def __init__(self, x:int, y:int):
+        self.box_uid = uuid.uuid4()
+        self.box_pos = [x, y]
+
 class Game():
     def __init__(self, map_size_x:int, map_size_y:int, box_number:int, gift_number:int):
         self.map_size_x = map_size_x
@@ -35,7 +41,7 @@ class Game():
         for _ in range(self.box_number):
             while True:
                 if pos := (random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y)) not in self.possible_player_pos:
-                    boxes.append(list(pos))
+                    boxes.append(Box(*pos))
                     break
 
         return boxes
@@ -49,6 +55,6 @@ class Game():
             "client_uid": uid,
             "bombs_amount": bombs_amount,
             "current_score": 0,
-            "box": self.box
+            "box": json.dumps(self.box, default=lambda x: x.__dict__)
         }
 
