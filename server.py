@@ -24,6 +24,10 @@ class Server():
         else:
             print("Session is full")
 
+    async def on_move(self, data):
+        PLAYERS[data['uid']].set_player_pos(data['x'], data['y'])
+        await self.notify_players(PLAYERS[data['uid']].get_pos())
+
     async def notify_players(self, message):
         if PLAYERS:
             await asyncio.wait([player.websocket.send(message) for player in PLAYERS.values()])
@@ -40,9 +44,11 @@ class Server():
             if data['msg_code'] == 'connect':
                 # Add new player
                 await self.on_connect(data, websocket)
-                print(f'Number of players: {len(PLAYERS)}')
+                print(f"Number of players: {len(PLAYERS)}")
             elif data['msg_code'] == 'player_move':
-                pass
+                # Handle player movement
+                await self.on_move(data)
+                print(f"Player {data['uid']} moved to {data['x']}, {data['y']}")
             elif data['msg_code'] == 'player_plant_bomb':
                 pass
             elif data['msg_code'] == 'disconnect':
