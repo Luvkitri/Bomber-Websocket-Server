@@ -23,6 +23,16 @@ class Player():
 
         return json.dumps(pos_message)
 
+    def bomb_planted_msg(self):
+        bomb_uid = uuid.uuid4()
+        bomb_message = {
+            "message_code": "Bomb has been planted",
+            "x": self.x,
+            "y": self.y,
+            "bomb_uid": str(bomb_uid) 
+        }
+
+        return json.dumps(bomb_message), bomb_uid 
 class Box():
     def __init__(self, x:int, y:int):
         self.box_uid = str(uuid.uuid4())
