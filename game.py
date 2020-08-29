@@ -34,6 +34,13 @@ class Gift():
         self.gift_type = gift_type
         self.gift_pos = [x, y]
 
+class Bomb():
+    def __init__(self, x:int, y:int):
+        self.bomb_uid = str(uuid.uuid4)
+        self.bomb_pos = [x, y]
+        self.bomb_range_x = 6
+        self.bomb_range_y = 6
+
 class Game():
     def __init__(self, map_size_x:int, map_size_y:int, box_number:int, gift_number:int):
         self.map_size_x = map_size_x
