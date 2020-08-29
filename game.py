@@ -8,12 +8,23 @@ class Player():
         self.x = x
         self.y = y
         self.websocket = websocket
+        self.bombs_amount = 3
 
     def set_player_pos(self, x:int, y:int):
         self.x = x
         self.y = y
 
+    def decrease_bombs(self):
+        if self.bombs_amount > 0:
+            self.bombs_amount -= 1
+
+    def increase_bombs(self):
+        pass
+
     def get_pos(self):
+        return (self.x, self.y)
+
+    def pos_msg(self):
         pos_message = {
             "message_code": "player_pos",
             "nick": self.nick,
@@ -33,6 +44,7 @@ class Player():
         }
 
         return json.dumps(bomb_message), bomb_uid 
+
     def bomb_amount_msg(self):
         bomb_amount_message = {
             "message_code": "bomb_amount",
@@ -69,6 +81,15 @@ class Game():
         self.box = self.generate_boxes()
         self.gifts = self.generate_gifts()
         self.default_bombs_num = 3
+
+    def handle_explosion(self, uid):
+        explosion_message = {
+            "msg_code": "Bomb exploded",
+            "x_range": 6,
+            "y_range": 6,
+            "bomb_uid": str(uid),
+            "objects_hit": []
+        }
 
     def generate_boxes(self):
         boxes = []
