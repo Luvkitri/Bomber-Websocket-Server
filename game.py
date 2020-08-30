@@ -88,13 +88,21 @@ class Game():
         self.box = self.generate_boxes()
         self.gifts = self.generate_gifts()
         self.default_bombs_num = 3
+        # self.game_bombs = []
 
-    def handle_explosion(self, uid):
+    def handle_explosion(self, bomb, players):
+        for i in range(2):
+            for j in range(-bomb.bomb_range_x, bomb.bomb_range_x):
+                if i:
+                    pass
+                else:
+                    pass
+
         explosion_message = {
             "msg_code": "Bomb exploded",
-            "x_range": 6,
-            "y_range": 6,
-            "bomb_uid": str(uid),
+            "x_range": bomb.range_x,
+            "y_range": bomb.range_y,
+            "bomb_uid": str(bomb.uid),
             "objects_hit": []
         }
 
@@ -109,6 +117,7 @@ class Game():
         return boxes
 
     # Dunno if gifts can only be placed where boxes are, or wherever
+    # Gifts spawn at box pos !!!
     def generate_gifts(self):
         gifts = []
         gift_types = ["type1", "type2", "type3"]
