@@ -52,15 +52,21 @@ class Server():
         PLAYERS[data['uid']].websocket.send(PLAYERS[data['uid']].bomb_amount_msg)
 
         # Inform players about planted bomb
-        bomb_msg, bomb_uid = PLAYERS[data['uid']].bomb_planted_msg()
+        bomb_msg, bomb = PLAYERS[data['uid']].bomb_planted_msg()
         await self.notify_players(bomb_msg)
         print(f"Player {data['uid']} has planted a bomb at {PLAYERS[data['uid']].get_pos()}")
 
         # Set a bomb timer
-        timer = Timer(3, self.bomb_exploded, bomb_uid)
+        bomb_timer = Timer(3, self.bomb_exploded, (bomb, PLAYERS))
+
+        # Set a bomb refresher timer
+        refresh_timer = Timer(6, self.bomb_refreshed, PLAYERS[data['uid']])
         
-    async def bomb_exploded(self, uid):
-        self.game.handle_explosion(uid)
+    async def bomb_exploded(self, bomb, players):
+        self.game.handle_explosion(bomb, players)
+
+    async def bomb_refreshed(self, player):
+        player.increase_bombs()
 
     async def notify_players(self, message):
         if PLAYERS:
