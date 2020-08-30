@@ -9,17 +9,18 @@ class Player():
         self.y = y
         self.websocket = websocket
         self.bombs_amount = 3
+        self.bombs = [Bomb() for _ in range(self.bombs_amount)]
 
     def set_player_pos(self, x:int, y:int):
         self.x = x
         self.y = y
 
     def decrease_bombs(self):
-        if self.bombs_amount > 0:
-            self.bombs_amount -= 1
+        if self.bombs:
+            return self.bombs.pop()
 
     def increase_bombs(self):
-        pass
+        self.bombs.append(Bomb())
 
     def get_pos(self):
         return (self.x, self.y)
@@ -35,15 +36,16 @@ class Player():
         return json.dumps(pos_message)
 
     def bomb_planted_msg(self):
-        bomb_uid = uuid.uuid4()
+        bomb = self.decrease_bombs()
+        bomb.set_bomb_pos(self.x, self.y)
         bomb_message = {
             "message_code": "Bomb has been planted",
             "x": self.x,
             "y": self.y,
-            "bomb_uid": str(bomb_uid) 
+            "bomb_uid": str(bomb.bomb_uid) 
         }
 
-        return json.dumps(bomb_message), bomb_uid 
+        return json.dumps(bomb_message), bomb
 
     def bomb_amount_msg(self):
         bomb_amount_message = {
@@ -55,21 +57,26 @@ class Player():
 
 class Box():
     def __init__(self, x:int, y:int):
-        self.box_uid = str(uuid.uuid4())
-        self.box_pos = [x, y]
+        self.uid = str(uuid.uuid4())
+        self.pos = [x, y]
 
 class Gift():
     def __init__(self, x:int, y:int, gift_type:str):
-        self.gift_uid = str(uuid.uuid4())
-        self.gift_type = gift_type
-        self.gift_pos = [x, y]
+        self.uid = str(uuid.uuid4())
+        self.type = gift_type
+        self.pos = [x, y]
 
 class Bomb():
-    def __init__(self, x:int, y:int):
-        self.bomb_uid = str(uuid.uuid4)
-        self.bomb_pos = [x, y]
-        self.bomb_range_x = 6
-        self.bomb_range_y = 6
+    def __init__(self, x:int=None, y:int=None):
+        self.uid = str(uuid.uuid4)
+        self.range_x = 3
+        self.range_y = 3
+
+        if (x and y) != None:
+            self.pos = [x, y]
+
+    def set_bomb_pos(self, x:int=None, y:int=None):
+        self.pos = [x, y]
 
 class Game():
     def __init__(self, map_size_x:int, map_size_y:int, box_number:int, gift_number:int):
