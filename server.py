@@ -5,7 +5,7 @@ import uuid
 import threading
 from game import Player, Game
 
-PLAYERS = dict()
+# PLAYERS = dict()
 
 # https://stackoverflow.com/questions/45419723/python-timer-with-asyncio-coroutine
 class Timer:
@@ -26,13 +26,14 @@ class Server():
         self.game = self.create_game()
 
     async def on_connect(self, data, websocket):
-        if len(PLAYERS) < 4:
+        if len(self.game.players) < 4:
             # Register player
             client_uid = uuid.uuid4()
-            PLAYERS[client_uid] = Player(data['nick'], *self.game.possible_player_pos.pop(), websocket)
+            self.game.add_player(client_uid, data['nick'], websocket)
+            #self.game.players[client_uid] = Player(data['nick'], *self.game.possible_player_pos.pop(), websocket)
 
             # Send starting position to each player            
-            await self.notify_players(PLAYERS[client_uid].pos_msg())
+            await self.notify_players(self.game.players[client_uid].pos_msg())
 
             # Welcome message is sent here
             await websocket.send(self.game.create_welcome_msg(data['nick'], client_uid, self.game.default_bombs_num))
@@ -40,37 +41,44 @@ class Server():
             print("Session is full")
 
     async def on_move(self, data):
-        PLAYERS[data['uid']].set_player_pos(data['x'], data['y'])
-        await self.notify_players(PLAYERS[data['uid']].pos_msg())
+        self.game.players[data['uid']].set_player_pos(data['x'], data['y'])
+        await self.notify_players(self.game.players[data['uid']].pos_msg())
         print(f"Player {data['uid']} has moved to {data['x']}, {data['y']}")
 
     async def on_bomb(self, data):
         # Decrease number of bombs player has
-        PLAYERS[data['uid']].decrease_bombs()
-    
+        self.game.players[data['uid']].decrease_bombs()
+        
         # Send current amount of bombs to a player
-        PLAYERS[data['uid']].websocket.send(PLAYERS[data['uid']].bomb_amount_msg)
+        self.game.players[data['uid']].websocket.send(self.game.players[data['uid']].bomb_amount_msg)
 
         # Inform players about planted bomb
-        bomb_msg, bomb = PLAYERS[data['uid']].bomb_planted_msg()
+        bomb_msg, bomb = self.game.players[data['uid']].bomb_planted_msg()
         await self.notify_players(bomb_msg)
-        print(f"Player {data['uid']} has planted a bomb at {PLAYERS[data['uid']].get_pos()}")
+        print(f"Player {data['uid']} has planted a bomb at {self.game.players[data['uid']].get_pos()}")
 
         # Set a bomb timer
-        bomb_timer = Timer(3, self.bomb_exploded, (bomb, PLAYERS))
+        bomb_timer = Timer(3, self.bomb_exploded, bomb)
 
         # Set a bomb refresher timer
-        refresh_timer = Timer(6, self.bomb_refreshed, PLAYERS[data['uid']])
+        refresh_timer = Timer(6, self.bomb_refreshed, self.game.players[data['uid']])
+
+    async def on_disconnect(self, data):
+        message = self.game.disconnect_player(data['uid'])
+        await self.notify_players(message)
         
-    async def bomb_exploded(self, bomb, players):
-        self.game.handle_explosion(bomb, players)
+        
+    async def bomb_exploded(self, bomb):
+        message = self.game.handle_explosion(bomb)
+        await self.notify_players(message)
 
     async def bomb_refreshed(self, player):
         player.increase_bombs()
+        player.websocket.send(player.bomb_amount_msg)
 
     async def notify_players(self, message):
-        if PLAYERS:
-            await asyncio.wait([player.websocket.send(message) for player in PLAYERS.values()])
+        if self.game.players:
+            await asyncio.wait([player.websocket.send(message) for player in self.game.players.values()])
 
     def create_game(self):
         with open('json/config.json') as f:
@@ -84,7 +92,7 @@ class Server():
             if data['msg_code'] == 'connect':
                 # Add new player
                 await self.on_connect(data, websocket)
-                print(f"Number of players: {len(PLAYERS)}")
+                print(f"Number of players: {len(self.game.players)}")
             elif data['msg_code'] == 'player_move':
                 # Handle player movement
                 await self.on_move(data)
@@ -93,7 +101,7 @@ class Server():
                 await self.on_bomb(data)
             elif data['msg_code'] == 'disconnect':
                 # Remove player
-                pass
+                await self.on_disconnect(data)
             else:
                 print("Unknown message.")
 
