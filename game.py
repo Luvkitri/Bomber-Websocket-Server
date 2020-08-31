@@ -136,7 +136,7 @@ class Game():
         for _ in range(self.gift_number):
             box = random.choice(self.boxes)
             temp_boxes.pop(box)
-            gifts.append(Gift(box.pos, random.choice(gift_types)))
+            gifts.append(Gift(*box.pos, random.choice(gift_types)))
 
         return gifts
 
