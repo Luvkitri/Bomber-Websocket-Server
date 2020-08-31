@@ -132,11 +132,11 @@ class Game():
     def generate_gifts(self):
         gifts = []
         gift_types = ["type1", "type2", "type3"]
+        temp_boxes = self.boxes
         for _ in range(self.gift_number):
-            while True:
-                if (pos := (random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y))) not in self.possible_player_pos:
-                    gifts.append(Gift(*pos, random.choice(gift_types)))
-                    break
+            box = random.choice(self.boxes)
+            temp_boxes.pop(box)
+            gifts.append(Gift(box.pos, random.choice(gift_types)))
 
         return gifts
 
