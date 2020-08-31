@@ -10,6 +10,7 @@ class Player():
         self.websocket = websocket
         self.bombs_amount = 3
         self.bombs = [Bomb() for _ in range(self.bombs_amount)]
+        self.score = 0
 
     def set_player_pos(self, x:int, y:int):
         self.x = x
@@ -94,7 +95,7 @@ class Game():
     def add_player(self, client_uid, nick:str, websocket):
         self.players[client_uid] = Player(nick, *self.possible_player_pos.pop(), websocket)
 
-    def handle_explosion(self, bomb):
+    def handle_explosion(self, bomb, player_uid):
         objects_hit = []
         for j in range(-bomb.bomb_range_x, bomb.bomb_range_x):
             vertical_pos = [bomb.x, j]
@@ -102,10 +103,15 @@ class Game():
             for box in self.boxes:
                 if vertical_pos == box.pos or horizontal_pos == box.pos:
                     objects_hit.append(box)
+                    self.players[player_uid].score += 1
 
             for player in self.players.values():
                 if vertical_pos == player.pos or horizontal_pos == player.pos:
                     objects_hit.append(player)
+                    if self.players[player_uid] != player:
+                        self.players[player_uid].score += 10
+
+
 
         explosion_message = {
             "msg_code": "Bomb exploded",
@@ -169,4 +175,3 @@ class Game():
         self.players.pop(uid)
 
         return json.dumps(disconnect_message)
-

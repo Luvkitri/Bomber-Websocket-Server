@@ -58,7 +58,7 @@ class Server():
         print(f"Player {data['uid']} has planted a bomb at {self.game.players[data['uid']].get_pos()}")
 
         # Set a bomb timer
-        bomb_timer = Timer(3, self.bomb_exploded, bomb)
+        bomb_timer = Timer(3, self.bomb_exploded, (bomb, data['uid']))
 
         # Set a bomb refresher timer
         refresh_timer = Timer(6, self.bomb_refreshed, self.game.players[data['uid']])
@@ -68,8 +68,8 @@ class Server():
         await self.notify_players(message)
         
         
-    async def bomb_exploded(self, bomb):
-        message = self.game.handle_explosion(bomb)
+    async def bomb_exploded(self, bomb, player_uid):
+        message = self.game.handle_explosion(bomb, player_uid)
         await self.notify_players(message)
 
     async def bomb_refreshed(self, player):
