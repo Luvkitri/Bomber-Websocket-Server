@@ -85,26 +85,37 @@ class Game():
         self.box_number = box_number
         self.gift_number = gift_number
         self.possible_player_pos = [(map_size_x/2, 0), (0, map_size_y/2), (map_size_x, map_size_y/2), (map_size_x/2, map_size_y)]
-        self.box = self.generate_boxes()
+        self.boxes = self.generate_boxes()
         self.gifts = self.generate_gifts()
         self.default_bombs_num = 3
         # self.game_bombs = []
+        self.players = dict()
 
-    def handle_explosion(self, bomb, players):
-        for i in range(2):
-            for j in range(-bomb.bomb_range_x, bomb.bomb_range_x):
-                if i:
-                    pass
-                else:
-                    pass
+    def add_player(self, client_uid, nick:str, websocket):
+        self.players[client_uid] = Player(nick, *self.possible_player_pos.pop(), websocket)
+
+    def handle_explosion(self, bomb):
+        objects_hit = []
+        for j in range(-bomb.bomb_range_x, bomb.bomb_range_x):
+            vertical_pos = [bomb.x, j]
+            horizontal_pos = [j, bomb.y]
+            for box in self.boxes:
+                if vertical_pos == box.pos or horizontal_pos == box.pos:
+                    objects_hit.append(box)
+
+            for player in self.players.values():
+                if vertical_pos == player.pos or horizontal_pos == player.pos:
+                    objects_hit.append(player)
 
         explosion_message = {
             "msg_code": "Bomb exploded",
             "x_range": bomb.range_x,
             "y_range": bomb.range_y,
             "bomb_uid": str(bomb.uid),
-            "objects_hit": []
+            "objects_hit": json.dumps(objects_hit, default=self.obj_dict)
         }
+
+        return json.dumps(explosion_message)
 
     def generate_boxes(self):
         boxes = []
@@ -140,9 +151,22 @@ class Game():
             "client_uid": str(uid),
             "bombs_amount": bombs_amount,
             "current_score": 0,
-            "box": json.dumps(self.box, default=self.obj_dict),
+            "box": json.dumps(self.boxes, default=self.obj_dict),
             "gifts": json.dumps(self.gifts, default=self.obj_dict)
         }
         
         return json.dumps(welcome_message)
+
+    # When player disconnects set his current pos to -1, -1 
+    def disconnect_player(self, uid):
+        disconnect_message = {
+            "message_code": "player_pos",
+            "nick": self.players[uid].nick,
+            "x": -1,
+            "y": -1
+        }
+
+        self.players.pop(uid)
+
+        return json.dumps(disconnect_message)
 
