@@ -87,12 +87,12 @@ class Game():
         self.box_number = box_number
         self.gift_number = gift_number
         self.possible_player_pos = [[map_size_x/2, 0], [0, map_size_y/2], [map_size_x, map_size_y/2], [map_size_x/2, map_size_y]]
+        self.walls = self.generate_walls()
         self.boxes = self.generate_boxes()
         self.gifts = self.generate_gifts()
         self.default_bombs_num = 3
         # self.game_bombs = []
         self.players = dict()
-        self.walls = self.generate_walls()
 
     def add_player(self, client_uid, nick:str, websocket):
         self.players[client_uid] = Player(nick, *self.possible_player_pos.pop(), websocket)
