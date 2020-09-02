@@ -32,16 +32,16 @@ class Server():
             self.game.add_player(client_uid, data['nick'], websocket)
             #self.game.players[client_uid] = Player(data['nick'], *self.game.possible_player_pos.pop(), websocket)
 
-            # Send starting position to each player            
-            await self.notify_players(self.game.players[client_uid].pos_msg())
-
             # Welcome message is sent here
             await websocket.send(self.game.create_welcome_msg(data['nick'], client_uid, self.game.default_bombs_num))
+
+            # Send starting position to each player            
+            await self.notify_players(self.game.players[client_uid].pos_msg())
         else:
             print("Session is full")
 
     async def on_move(self, data):
-        self.game.players[data['uid']].set_player_pos(data['x'], data['y'])
+        self.game.players[data['uid']].set_player_pos(data['x'], data['y'], self.game.walls)
         await self.notify_players(self.game.players[data['uid']].pos_msg())
         print(f"Player {data['uid']} has moved to {data['x']}, {data['y']}")
 
@@ -66,8 +66,7 @@ class Server():
     async def on_disconnect(self, data):
         message = self.game.disconnect_player(data['uid'])
         await self.notify_players(message)
-        
-        
+    
     async def bomb_exploded(self, bomb, player_uid):
         message = self.game.handle_explosion(bomb, player_uid)
         await self.notify_players(message)
