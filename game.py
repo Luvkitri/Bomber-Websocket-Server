@@ -127,20 +127,6 @@ class Game():
                     if self.players[player_uid] != player:
                         self.players[player_uid].score += 10
 
-        for j in range(-bomb.bomb_range_x, bomb.bomb_range_x):
-            vertical_pos = [bomb.x, j]
-            horizontal_pos = [j, bomb.y]
-            for box in self.boxes:
-                if vertical_pos == box.pos or horizontal_pos == box.pos:
-                    objects_hit.append(box)
-                    self.players[player_uid].score += 1
-
-            for player in self.players.values():
-                if vertical_pos == player.pos or horizontal_pos == player.pos:
-                    objects_hit.append(player)
-                    if self.players[player_uid] != player:
-                        self.players[player_uid].score += 10
-
         explosion_message = {
             "msg_code": "Bomb exploded",
             "x_range": bomb.range_x,
