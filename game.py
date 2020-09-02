@@ -147,6 +147,22 @@ class Game():
 
         return gifts
 
+    def generate_walls(self):
+        walls = []
+        for i in range(self.map_size_x):
+            walls.append([i, 0])
+            walls.append([i, self.map_size_y-1])
+
+        for i in range(1, self.map_size_y):
+            walls.append([0, i])
+            walls.append([self.map_size_x-1, i])
+
+        for i in range(int((self.map_size_x-2)/2)+1):
+            for j in range(int((self.map_size_y-2)/2)+1):
+                walls.append([i*2, j*2])
+
+        return walls
+
     def obj_dict(self, obj):
         return obj.__dict__
 
