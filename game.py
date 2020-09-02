@@ -12,9 +12,10 @@ class Player():
         self.bombs = [Bomb() for _ in range(self.bombs_amount)]
         self.score = 0
 
-    def set_player_pos(self, x:int, y:int):
-        self.x = x
-        self.y = y
+    def set_player_pos(self, x:int, y:int, walls):
+        if [x, y] not in walls:
+            self.x = x
+            self.y = y
 
     def decrease_bombs(self):
         if self.bombs:
@@ -85,7 +86,8 @@ class Game():
         self.map_size_y = map_size_y
         self.box_number = box_number
         self.gift_number = gift_number
-        self.possible_player_pos = [(map_size_x/2, 0), (0, map_size_y/2), (map_size_x, map_size_y/2), (map_size_x/2, map_size_y)]
+        self.possible_player_pos = [[map_size_x/2, 0], [0, map_size_y/2], [map_size_x, map_size_y/2], [map_size_x/2, map_size_y]]
+        self.walls = self.generate_walls()
         self.boxes = self.generate_boxes()
         self.gifts = self.generate_gifts()
         self.default_bombs_num = 3
@@ -97,6 +99,34 @@ class Game():
 
     def handle_explosion(self, bomb, player_uid):
         objects_hit = []
+        positions_hit = []
+
+        blast = {
+            "up": [[bomb.x, bomb.y + i] for i in range(1, bomb.bomb_range_y + 1)],
+            "down": [[bomb.x, bomb.y + i] for i in range(-1, -bomb.bomb_range_y - 1, -1)],
+            "right": [[bomb.x + i, bomb.y] for i in range(1, bomb.bomb_range_x + 1)],
+            "left": [[bomb.x + i, bomb.y] for i in range(-1, -bomb.bomb_range_x - 1, -1)]
+        }
+
+        for direction in blast.values():
+            for pos in direction:
+                if pos in self.walls:
+                    break
+                else:
+                    positions_hit.append(pos)
+
+        for pos in positions_hit:
+            for box in self.boxes:
+                if pos == box.pos:
+                    objects_hit.append(box)
+                    self.players[player_uid].score += 1
+
+            for player in self.players.values():
+                if pos == player.pos:
+                    objects_hit.append(player)
+                    if self.players[player_uid] != player:
+                        self.players[player_uid].score += 10
+
         for j in range(-bomb.bomb_range_x, bomb.bomb_range_x):
             vertical_pos = [bomb.x, j]
             horizontal_pos = [j, bomb.y]
@@ -110,8 +140,6 @@ class Game():
                     objects_hit.append(player)
                     if self.players[player_uid] != player:
                         self.players[player_uid].score += 10
-
-
 
         explosion_message = {
             "msg_code": "Bomb exploded",
@@ -127,7 +155,7 @@ class Game():
         boxes = []
         for _ in range(self.box_number):
             while True:
-                if (pos := (random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y))) not in self.possible_player_pos:
+                if (pos := [random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y)]) not in (self.possible_player_pos and self.walls):
                     boxes.append(Box(*pos))
                     break
 
@@ -145,6 +173,22 @@ class Game():
             gifts.append(Gift(*box.pos, random.choice(gift_types)))
 
         return gifts
+
+    def generate_walls(self):
+        walls = []
+        for i in range(self.map_size_x):
+            walls.append([i, 0])
+            walls.append([i, self.map_size_y-1])
+
+        for i in range(1, self.map_size_y):
+            walls.append([0, i])
+            walls.append([self.map_size_x-1, i])
+
+        for i in range(int((self.map_size_x-2)/2)+1):
+            for j in range(int((self.map_size_y-2)/2)+1):
+                walls.append([i*2, j*2])
+
+        return walls
 
     def obj_dict(self, obj):
         return obj.__dict__
