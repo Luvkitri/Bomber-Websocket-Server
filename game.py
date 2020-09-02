@@ -12,7 +12,8 @@ class Player():
         self.bombs = [Bomb() for _ in range(self.bombs_amount)]
         self.score = 0
 
-    def set_player_pos(self, x:int, y:int):
+    def set_player_pos(self, x:int, y:int, walls):
+        if [x, y] not in walls:
         self.x = x
         self.y = y
 
