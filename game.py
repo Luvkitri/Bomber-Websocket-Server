@@ -29,7 +29,7 @@ class Player():
 
     def pos_msg(self):
         pos_message = {
-            "message_code": "player_pos",
+            "msg_code": "player_pos",
             "nick": self.nick,
             "x": self.x,
             "y": self.y
@@ -41,7 +41,7 @@ class Player():
         bomb = self.decrease_bombs()
         bomb.set_bomb_pos(self.x, self.y)
         bomb_message = {
-            "message_code": "Bomb has been planted",
+            "msg_code": "Bomb has been planted",
             "x": self.x,
             "y": self.y,
             "bomb_uid": str(bomb.bomb_uid) 
@@ -51,7 +51,7 @@ class Player():
 
     def bomb_amount_msg(self):
         bomb_amount_message = {
-            "message_code": "bomb_amount",
+            "msg_code": "bomb_amount",
             "amount": self.bombs_amount
         }
 
@@ -196,7 +196,7 @@ class Game():
     # When player disconnects set his current pos to -1, -1 
     def disconnect_player(self, uid):
         disconnect_message = {
-            "message_code": "player_pos",
+            "msg_code": "player_pos",
             "nick": self.players[uid].nick,
             "x": -1,
             "y": -1
