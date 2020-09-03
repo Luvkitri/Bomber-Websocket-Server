@@ -30,6 +30,7 @@ class Server():
             # Register player
             client_uid = str(uuid.uuid4())
             self.game.add_player(client_uid, data['nick'], websocket)
+            print(data['nick'])
             print(self.game.players[client_uid])
 
             # Welcome message is sent here

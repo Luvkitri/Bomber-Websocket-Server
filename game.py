@@ -58,7 +58,7 @@ class Player():
         return json.dumps(bomb_amount_message)
 
     def __str__(self):
-        return "|NICK: " + self.nick + "| |POS: (" + self.x + ", " + self.y + "| |SCORE: " + self.score + "|"
+        return "|NICK: " + self.nick + "| |POS: (" + str(self.x) + ", " + str(self.y) + ")| |SCORE: " + str(self.score) + "|"
 
 class Box():
     def __init__(self, x:int, y:int):

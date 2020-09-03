@@ -1,6 +1,6 @@
 {
-    "map_size_x": 500,
-    "map_size_y": 500,
-    "box_number": 100,
+    "map_size_x": 15,
+    "map_size_y": 15,
+    "box_number": 50,
     "gift_number": 50
 }
