@@ -57,6 +57,9 @@ class Player():
 
         return json.dumps(bomb_amount_message)
 
+    def __str__(self):
+        return "|NICK: " + self.nick + "| |POS: (" + self.x + ", " + self.y + "| |SCORE: " + self.score + "|"
+
 class Box():
     def __init__(self, x:int, y:int):
         self.uid = str(uuid.uuid4())
@@ -86,7 +89,7 @@ class Game():
         self.map_size_y = map_size_y
         self.box_number = box_number
         self.gift_number = gift_number
-        self.possible_player_pos = [[map_size_x/2, 0], [0, map_size_y/2], [map_size_x, map_size_y/2], [map_size_x/2, map_size_y]]
+        self.possible_player_pos = [[1, 1], [1, map_size_y-1], [map_size_x-1, 1], [map_size_x-1, map_size_y-1]]
         self.walls = self.generate_walls()
         self.boxes = self.generate_boxes()
         self.gifts = self.generate_gifts()

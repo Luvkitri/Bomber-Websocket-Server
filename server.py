@@ -31,6 +31,7 @@ class Server():
             client_uid = uuid.uuid4()
             self.game.add_player(client_uid, data['nick'], websocket)
             #self.game.players[client_uid] = Player(data['nick'], *self.game.possible_player_pos.pop(), websocket)
+            print(self.game.players[client_uid])
 
             # Welcome message is sent here
             await websocket.send(self.game.create_welcome_msg(data['nick'], client_uid, self.game.default_bombs_num))
