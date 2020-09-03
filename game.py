@@ -187,7 +187,7 @@ class Game():
             "msg_code": "welcome_msg",
             "map_size_x": self.map_size_x,
             "map_size_y": self.map_size_y,
-            "client_uid": str(uid),
+            "client_uid": uid,
             "bombs_amount": bombs_amount,
             "current_score": 0,
             "box": json.dumps(self.boxes, default=self.obj_dict),

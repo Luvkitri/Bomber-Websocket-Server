@@ -28,9 +28,8 @@ class Server():
     async def on_connect(self, data, websocket):
         if len(self.game.players) < 4:
             # Register player
-            client_uid = uuid.uuid4()
+            client_uid = str(uuid.uuid4())
             self.game.add_player(client_uid, data['nick'], websocket)
-            #self.game.players[client_uid] = Player(data['nick'], *self.game.possible_player_pos.pop(), websocket)
             print(self.game.players[client_uid])
 
             # Welcome message is sent here
