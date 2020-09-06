@@ -21,6 +21,8 @@ class Player():
         if self.bombs:
             return self.bombs.pop()
 
+        return 'No more bombs'
+
     def increase_bombs(self):
         self.bombs.append(Bomb())
 
@@ -39,6 +41,7 @@ class Player():
 
     def bomb_planted_msg(self):
         bomb = self.decrease_bombs()
+        print(bomb)
         bomb.set_bomb_pos(self.x, self.y)
         bomb_message = {
             "msg_code": "Bomb has been planted",
@@ -58,7 +61,7 @@ class Player():
         return json.dumps(bomb_amount_message)
 
     def __str__(self):
-        return "|NICK: " + self.nick + "| |POS: (" + str(self.x) + ", " + str(self.y) + ")| |SCORE: " + str(self.score) + "|"
+        return "PLAYER => |NICK: " + self.nick + "| |POS: (" + str(self.x) + ", " + str(self.y) + ")| |SCORE: " + str(self.score) + "|"
 
 class Box():
     def __init__(self, x:int, y:int):
@@ -82,6 +85,9 @@ class Bomb():
 
     def set_bomb_pos(self, x:int=None, y:int=None):
         self.pos = [x, y]
+
+    def __str__(self):
+        return "BOMB => |UID: {0}| |POS: ({1}, {2})| |X_RANGE: {3}| |Y_RANGE: {4}|"
 
 class Game():
     def __init__(self, map_size_x:int, map_size_y:int, box_number:int, gift_number:int):
