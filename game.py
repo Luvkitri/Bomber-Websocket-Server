@@ -87,7 +87,7 @@ class Bomb():
         self.pos = [x, y]
 
     def __str__(self):
-        return "BOMB => |UID: {0}| |POS: ({1}, {2})| |X_RANGE: {3}| |Y_RANGE: {4}|"
+        return "BOMB => |UID: {0}| |POS: ({1}, {2})| |X_RANGE: {3}| |Y_RANGE: {4}|".format(self.uid, self.pos[0], self.pos[1], self.range_x, self.range_y)
 
 class Game():
     def __init__(self, map_size_x:int, map_size_y:int, box_number:int, gift_number:int):
