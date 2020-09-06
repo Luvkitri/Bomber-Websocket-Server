@@ -47,16 +47,20 @@ class Server():
         print(f"Player {data['uid']} has moved to {data['x']}, {data['y']}")
 
     async def on_bomb(self, data):
-        # Decrease number of bombs player has
-        self.game.players[data['uid']].decrease_bombs()
-        
+        # Remove one bomb from player
+        bomb = self.game.players[data['uid']].decrease_bombs()
+
         # Send current amount of bombs to a player
         self.game.players[data['uid']].websocket.send(self.game.players[data['uid']].bomb_amount_msg)
-
+        
         # Inform players about planted bomb
-        bomb_msg, bomb = self.game.players[data['uid']].bomb_planted_msg()
+        if isinstance(bomb, str):
+            self.game.players[data['uid']].websocket.send(bomb)
+            return
+
+        bomb_msg = self.game.players[data['uid']].bomb_planted_msg(bomb)
         await self.notify_players(bomb_msg)
-        print(f"Player {data['uid']} has planted a bomb at {self.game.players[data['uid']].get_pos()}")
+        print(f"Player {self.game.players[data['uid']].nick} has planted a bomb at {self.game.players[data['uid']].get_pos()}")
 
         # Set a bomb timer
         bomb_timer = Timer(3, self.bomb_exploded, (bomb, data['uid']))

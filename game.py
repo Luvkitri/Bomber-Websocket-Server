@@ -21,7 +21,7 @@ class Player():
         if self.bombs:
             return self.bombs.pop()
 
-        return 'No more bombs'
+        return "No more bombs!"
 
     def increase_bombs(self):
         self.bombs.append(Bomb())
@@ -39,9 +39,7 @@ class Player():
 
         return json.dumps(pos_message)
 
-    def bomb_planted_msg(self):
-        bomb = self.decrease_bombs()
-        print(bomb)
+    def bomb_planted_msg(self, bomb):
         bomb.set_bomb_pos(self.x, self.y)
         bomb_message = {
             "msg_code": "Bomb has been planted",
@@ -50,7 +48,9 @@ class Player():
             "bomb_uid": bomb.uid 
         }
 
-        return json.dumps(bomb_message), bomb
+        print(bomb)
+
+        return json.dumps(bomb_message)
 
     def bomb_amount_msg(self):
         bomb_amount_message = {
