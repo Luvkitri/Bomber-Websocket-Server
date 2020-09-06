@@ -44,7 +44,7 @@ class Player():
             "msg_code": "Bomb has been planted",
             "x": self.x,
             "y": self.y,
-            "bomb_uid": str(bomb.bomb_uid) 
+            "bomb_uid": bomb.uid 
         }
 
         return json.dumps(bomb_message), bomb
@@ -134,7 +134,7 @@ class Game():
             "msg_code": "Bomb exploded",
             "x_range": bomb.range_x,
             "y_range": bomb.range_y,
-            "bomb_uid": str(bomb.uid),
+            "bomb_uid": bomb.uid,
             "objects_hit": json.dumps(objects_hit, default=self.obj_dict)
         }
 
