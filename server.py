@@ -51,11 +51,11 @@ class Server():
         bomb = self.game.players[data['uid']].decrease_bombs()
 
         # Send current amount of bombs to a player
-        self.game.players[data['uid']].websocket.send(self.game.players[data['uid']].bomb_amount_msg)
+        await self.game.players[data['uid']].websocket.send(self.game.players[data['uid']].bomb_amount_msg())
         
         # Inform players about planted bomb
         if isinstance(bomb, str):
-            self.game.players[data['uid']].websocket.send(bomb)
+            await self.game.players[data['uid']].websocket.send(bomb)
             return
 
         bomb_msg = self.game.players[data['uid']].bomb_planted_msg(bomb)
@@ -78,7 +78,7 @@ class Server():
 
     async def bomb_refreshed(self, player):
         player.increase_bombs()
-        player.websocket.send(player.bomb_amount_msg)
+        await player.websocket.send(player.bomb_amount_msg())
 
     async def notify_players(self, message):
         if self.game.players:
