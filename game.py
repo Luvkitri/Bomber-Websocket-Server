@@ -111,10 +111,10 @@ class Game():
         positions_hit = []
 
         blast = {
-            "up": [[bomb.x, bomb.y + i] for i in range(1, bomb.bomb_range_y + 1)],
-            "down": [[bomb.x, bomb.y + i] for i in range(-1, -bomb.bomb_range_y - 1, -1)],
-            "right": [[bomb.x + i, bomb.y] for i in range(1, bomb.bomb_range_x + 1)],
-            "left": [[bomb.x + i, bomb.y] for i in range(-1, -bomb.bomb_range_x - 1, -1)]
+            "up": [[bomb.pos[0], bomb.pos[1] + i] for i in range(1, bomb.range_y + 1)],
+            "down": [[bomb.pos[0], bomb.pos[1] + i] for i in range(-1, -bomb.range_y - 1, -1)],
+            "right": [[bomb.pos[0] + i, bomb.pos[1]] for i in range(1, bomb.range_x + 1)],
+            "left": [[bomb.pos[0] + i, bomb.pos[1]] for i in range(-1, -bomb.range_x - 1, -1)]
         }
 
         for direction in blast.values():
@@ -131,7 +131,7 @@ class Game():
                     self.players[player_uid].score += 1
 
             for player in self.players.values():
-                if pos == player.pos:
+                if pos == [player.x, player.y]:
                     objects_hit.append(player)
                     if self.players[player_uid] != player:
                         self.players[player_uid].score += 10
@@ -150,7 +150,7 @@ class Game():
         boxes = []
         for _ in range(self.box_number):
             while True:
-                if (pos := [random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y)]) not in (self.possible_player_pos or self.walls):
+                if (pos := [random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y)]) not in (self.possible_player_pos and self.walls):
                     boxes.append(Box(*pos))
                     break
 

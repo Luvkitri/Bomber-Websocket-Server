@@ -63,7 +63,7 @@ class Server():
         print(f"Player {self.game.players[data['uid']].nick} has planted a bomb at {self.game.players[data['uid']].get_pos()}")
 
         # Set a bomb timer
-        bomb_timer = Timer(3, self.bomb_exploded, (bomb, data['uid']))
+        bomb_timer = Timer(3, self.bomb_exploded, bomb, data['uid'])
 
         # Set a bomb refresher timer
         refresh_timer = Timer(6, self.bomb_refreshed, self.game.players[data['uid']])
