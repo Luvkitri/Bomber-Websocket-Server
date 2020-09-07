@@ -95,7 +95,7 @@ class Game():
         self.map_size_y = map_size_y
         self.box_number = box_number
         self.gift_number = gift_number
-        self.possible_player_pos = [[1, 1], [1, map_size_y-1], [map_size_x-1, 1], [map_size_x-1, map_size_y-1]]
+        self.possible_player_pos = [[1, 1], [1, map_size_y-2], [map_size_x-2, 1], [map_size_x-2, map_size_y-2]]
         self.walls = self.generate_walls()
         self.boxes = self.generate_boxes()
         self.gifts = self.generate_gifts()
@@ -150,7 +150,7 @@ class Game():
         boxes = []
         for _ in range(self.box_number):
             while True:
-                if (pos := [random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y)]) not in (self.possible_player_pos and self.walls):
+                if (pos := [random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y)]) not in (self.possible_player_pos or self.walls):
                     boxes.append(Box(*pos))
                     break
 
