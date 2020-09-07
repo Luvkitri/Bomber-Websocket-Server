@@ -161,9 +161,9 @@ class Game():
     def generate_gifts(self):
         gifts = []
         gift_types = ["type1", "type2", "type3"]
-        temp_boxes = self.boxes
+        temp_boxes = self.boxes.copy()
         for _ in range(self.gift_number):
-            box = random.choice(self.boxes)
+            box = random.choice(temp_boxes)
             temp_boxes.remove(box)
             gifts.append(Gift(*box.pos, random.choice(gift_types)))
 
