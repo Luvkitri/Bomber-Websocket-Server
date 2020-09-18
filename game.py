@@ -13,10 +13,15 @@ class Player():
         self.score = 0
 
     def set_player_pos(self, x:int, y:int, walls, boxes):
+        flag = True
         for box in boxes:
-            if [x, y] not in walls and [x, y] != box.pos:
-                self.x = x
-                self.y = y
+            if [x, y] == box.pos:
+                flag = False
+                break
+        
+        if [x, y] not in walls and flag:
+            self.x = x
+            self.y = y
 
     def decrease_bombs(self):
         if self.bombs:
@@ -147,21 +152,18 @@ class Game():
 
         return json.dumps(explosion_message)
 
-    # TODO Boxes can spawn in the same pos, I think...
     def generate_boxes(self):
         boxes = []
         boxes_pos = []
         for _ in range(self.box_number):
             while True:
-                if (pos := [random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y)]) not in (self.possible_player_pos or self.walls or boxes_pos):
+                if (pos := [random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y)]) not in self.possible_player_pos + self.walls + boxes_pos:
                     boxes_pos.append(pos)
                     boxes.append(Box(*pos))
                     break
 
         return boxes
 
-    # Dunno if gifts can only be placed where boxes are, or wherever
-    # Gifts spawn at box pos !!!
     def generate_gifts(self):
         gifts = []
         gift_types = ["type1", "type2", "type3"]
