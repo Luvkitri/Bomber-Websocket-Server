@@ -133,6 +133,7 @@ class Game():
         for pos in positions_hit:
             for box in self.boxes:
                 if pos == box.pos:
+                    self.boxes.remove(box)
                     objects_hit.append(box)
                     self.players[player_uid].score += 1
 
