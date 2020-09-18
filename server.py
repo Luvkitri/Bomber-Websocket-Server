@@ -72,6 +72,7 @@ class Server():
         message = self.game.disconnect_player(data['uid'])
         await self.notify_players(message)
     
+    # TODO Add sending current_score
     async def bomb_exploded(self, bomb, player_uid):
         message = self.game.handle_explosion(bomb, player_uid)
         await self.notify_players(message)

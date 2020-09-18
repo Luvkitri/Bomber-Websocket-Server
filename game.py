@@ -146,11 +146,12 @@ class Game():
 
         return json.dumps(explosion_message)
 
+    # TODO Boxes can spawn in the same pos, I think...
     def generate_boxes(self):
         boxes = []
         for _ in range(self.box_number):
             while True:
-                if (pos := [random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y)]) not in (self.possible_player_pos and self.walls):
+                if (pos := [random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y)]) not in (self.possible_player_pos or self.walls):
                     boxes.append(Box(*pos))
                     break
 
