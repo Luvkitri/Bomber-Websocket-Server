@@ -12,10 +12,11 @@ class Player():
         self.bombs = [Bomb() for _ in range(self.bombs_amount)]
         self.score = 0
 
-    def set_player_pos(self, x:int, y:int, walls):
-        if [x, y] not in walls:
-            self.x = x
-            self.y = y
+    def set_player_pos(self, x:int, y:int, walls, boxes):
+        for box in boxes:
+            if [x, y] not in walls and [x, y] != box.pos:
+                self.x = x
+                self.y = y
 
     def decrease_bombs(self):
         if self.bombs:
@@ -149,9 +150,11 @@ class Game():
     # TODO Boxes can spawn in the same pos, I think...
     def generate_boxes(self):
         boxes = []
+        boxes_pos = []
         for _ in range(self.box_number):
             while True:
-                if (pos := [random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y)]) not in (self.possible_player_pos or self.walls):
+                if (pos := [random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y)]) not in (self.possible_player_pos or self.walls or boxes_pos):
+                    boxes_pos.append(pos)
                     boxes.append(Box(*pos))
                     break
 
