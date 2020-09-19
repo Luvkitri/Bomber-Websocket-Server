@@ -75,10 +75,15 @@ class Server():
     # TODO Add sending current_score
     async def bomb_exploded(self, bomb, player_uid):
         message = self.game.handle_explosion(bomb, player_uid)
+        print(f'Bomb {bomb.uid} has exploded')
         await self.notify_players(message)
+        
+        # Send score to a player
+        await self.game.players[player_uid].websocket.send(self.game.players[player_uid].current_score_msg())
 
     async def bomb_refreshed(self, player):
         player.increase_bombs()
+        print("Bomb refreshed")
         await player.websocket.send(player.bomb_amount_msg())
 
     async def notify_players(self, message):

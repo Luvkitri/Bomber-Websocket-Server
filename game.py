@@ -66,6 +66,14 @@ class Player():
 
         return json.dumps(bomb_amount_message)
 
+    def current_score_msg(self):
+        current_score_message = {
+            "msg_code": "current score",
+            "score": self.score
+        }
+
+        return json.dumps(current_score_message)
+
     def __str__(self):
         return "PLAYER => |NICK: " + self.nick + "| |POS: (" + str(self.x) + ", " + str(self.y) + ")| |SCORE: " + str(self.score) + "|"
 
@@ -82,7 +90,7 @@ class Gift():
 
 class Bomb():
     def __init__(self, x:int=None, y:int=None):
-        self.uid = str(uuid.uuid4)
+        self.uid = str(uuid.uuid4())
         self.range_x = 3
         self.range_y = 3
 
@@ -102,6 +110,8 @@ class Game():
         self.box_number = box_number
         self.gift_number = gift_number
         self.possible_player_pos = [[1, 1], [1, map_size_y-2], [map_size_x-2, 1], [map_size_x-2, map_size_y-2]]
+        self.no_box_pos = [[1, 2], [2, 1], [1, map_size_y-3], [2, map_size_y-2], [map_size_x-3, 1],
+                            [map_size_x-2, 2], [map_size_x-3, map_size_y-2], [map_size_x-2, map_size_y-3]]
         self.walls = self.generate_walls()
         self.boxes = self.generate_boxes()
         self.gifts = self.generate_gifts()
@@ -158,7 +168,7 @@ class Game():
         boxes_pos = []
         for _ in range(self.box_number):
             while True:
-                if (pos := [random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y)]) not in self.possible_player_pos + self.walls + boxes_pos:
+                if (pos := [random.randrange(0, self.map_size_x), random.randrange(0, self.map_size_y)]) not in self.possible_player_pos + self.walls + boxes_pos + self.no_box_pos:
                     boxes_pos.append(pos)
                     boxes.append(Box(*pos))
                     break
