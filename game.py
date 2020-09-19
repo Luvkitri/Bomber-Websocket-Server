@@ -61,7 +61,7 @@ class Player():
     def bomb_amount_msg(self):
         bomb_amount_message = {
             "msg_code": "bomb_amount",
-            "amount": self.bombs_amount
+            "amount": len(self.bombs)
         }
 
         return json.dumps(bomb_amount_message)
