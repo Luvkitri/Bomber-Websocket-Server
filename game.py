@@ -217,17 +217,4 @@ class Game():
             "gifts": json.dumps(self.gifts, default=self.obj_dict)
         }
         
-        return json.dumps(welcome_message)
-
-    # When player disconnects set his current pos to -1, -1 
-    def disconnect_player(self, uid):
-        disconnect_message = {
-            "msg_code": "player_pos",
-            "nick": self.players[uid].nick,
-            "x": -1,
-            "y": -1
-        }
-
-        self.players.pop(uid)
-
-        return json.dumps(disconnect_message)
+        return json.dumps(welcome_message)    

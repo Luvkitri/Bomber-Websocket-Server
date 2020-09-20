@@ -69,10 +69,9 @@ class Server():
         refresh_timer = Timer(6, self.bomb_refreshed, self.game.players[data['uid']])
 
     async def on_disconnect(self, data):
-        message = self.game.disconnect_player(data['uid'])
-        await self.notify_players(message)
+        await self.game.players[data['uid']].websocket.close()
+        self.game.players.pop(data['uid'])
     
-    # TODO Add sending current_score
     async def bomb_exploded(self, bomb, player_uid):
         message = self.game.handle_explosion(bomb, player_uid)
         print(f'Bomb {bomb.uid} has exploded')
