@@ -177,7 +177,7 @@ class Game():
 
     def generate_gifts(self):
         gifts = []
-        gift_types = ["type1", "type2", "type3"]
+        gift_types = ["life", "bomb"]
         temp_boxes = self.boxes.copy()
         for _ in range(self.gift_number):
             box = random.choice(temp_boxes)
