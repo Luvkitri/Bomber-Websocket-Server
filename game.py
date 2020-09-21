@@ -12,7 +12,7 @@ class Player():
         self.bombs = [Bomb() for _ in range(self.bombs_amount)]
         self.score = 0
 
-    def set_player_pos(self, x:int, y:int, walls, boxes):
+    def set_player_pos(self, x:int, y:int, walls, boxes, gifts):
         flag = True
         for box in boxes:
             if [x, y] == box.pos:
@@ -23,6 +23,13 @@ class Player():
             self.x = x
             self.y = y
 
+        for gift in gifts:
+            if [x, y] == gift.pos:
+                gifts.remove(gift)
+                return self.gift_picked_msg(gift.uid)
+
+        return None
+
     def decrease_bombs(self):
         if self.bombs:
             return self.bombs.pop()
@@ -30,7 +37,8 @@ class Player():
         return "No more bombs!"
 
     def increase_bombs(self):
-        self.bombs.append(Bomb())
+        if self.bombs_amount > len(self.bombs):
+            self.bombs.append(Bomb())
 
     def get_pos(self):
         return (self.x, self.y)
@@ -73,6 +81,14 @@ class Player():
         }
 
         return json.dumps(current_score_message)
+
+    def gift_picked_msg(self, gift_uid):
+        gift_picked_message = {
+            "msg_code": "gift_picked",
+            "gift_uid": gift_uid
+        }
+
+        return json.dumps(gift_picked_message)
 
     def __str__(self):
         return "PLAYER => |NICK: " + self.nick + "| |POS: (" + str(self.x) + ", " + str(self.y) + ")| |SCORE: " + str(self.score) + "|"
@@ -177,7 +193,7 @@ class Game():
 
     def generate_gifts(self):
         gifts = []
-        gift_types = ["life", "bomb"]
+        gift_types = ["bomb"]
         temp_boxes = self.boxes.copy()
         for _ in range(self.gift_number):
             box = random.choice(temp_boxes)

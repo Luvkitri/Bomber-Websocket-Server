@@ -42,7 +42,15 @@ class Server():
             print("Session is full")
 
     async def on_move(self, data):
-        self.game.players[data['uid']].set_player_pos(data['x'], data['y'], self.game.walls, self.game.boxes)
+        gift_picked_message = self.game.players[data['uid']].set_player_pos(data['x'], data['y'], self.game.walls, self.game.boxes, self.game.gifts)
+
+        if gift_picked_message != None:
+            await self.game.players[data['uid']].websocket.send(gift_picked_message)
+            self.game.players[data['uid']].bombs_amount += 1
+            self.game.players[data['uid']].increase_bombs()
+            await self.game.players[data['uid']].websocket.send(self.game.players[data['uid']].bomb_amount_msg())
+
+
         await self.notify_players(self.game.players[data['uid']].pos_msg())
         print(f"Player {data['uid']} has moved to {data['x']}, {data['y']}")
 
