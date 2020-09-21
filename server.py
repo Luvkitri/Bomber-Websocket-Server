@@ -85,9 +85,9 @@ class Server():
         print(f'Bomb {bomb.uid} has exploded')
 
         if players_hit:
-            for player in players_hit:
-                player.set_player_pos(-1, -1)
-                await self.notify_players(player.pos_msg_dead())
+            for player_uid in players_hit:
+                self.game.players[player_uid].set_player_pos_dead(1000, 1000)
+                await self.notify_players(self.game.players[player_uid].pos_msg())
 
         await self.notify_players(message)
         

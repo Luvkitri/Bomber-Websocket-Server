@@ -31,6 +31,7 @@ class Player():
         return None
 
     def set_player_pos_dead(self, x:int, y:int):
+        print("test")
         self.x = x
         self.y = y
 
