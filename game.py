@@ -25,6 +25,7 @@ class Player():
 
         for gift in gifts:
             if [x, y] == gift.pos:
+                gifts.remove(gift)
                 return self.gift_picked_msg(gift.uid)
 
         return None
