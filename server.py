@@ -46,6 +46,10 @@ class Server():
 
         if gift_picked_message != None:
             await self.game.players[data['uid']].websocket.send(gift_picked_message)
+            self.game.players[data['uid']].bombs_amount += 1
+            self.game.players[data['uid']].increase_bombs()
+            await self.game.players[data['uid']].websocket.send(self.game.players[data['uid']].bomb_amount_msg())
+
 
         await self.notify_players(self.game.players[data['uid']].pos_msg())
         print(f"Player {data['uid']} has moved to {data['x']}, {data['y']}")

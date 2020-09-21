@@ -36,7 +36,8 @@ class Player():
         return "No more bombs!"
 
     def increase_bombs(self):
-        self.bombs.append(Bomb())
+        if self.bombs_amount > len(self.bombs):
+            self.bombs.append(Bomb())
 
     def get_pos(self):
         return (self.x, self.y)
@@ -191,7 +192,7 @@ class Game():
 
     def generate_gifts(self):
         gifts = []
-        gift_types = ["life", "bomb"]
+        gift_types = ["bomb"]
         temp_boxes = self.boxes.copy()
         for _ in range(self.gift_number):
             box = random.choice(temp_boxes)
