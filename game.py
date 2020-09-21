@@ -144,12 +144,12 @@ class Game():
             for box in self.boxes:
                 if pos == box.pos:
                     self.boxes.remove(box)
-                    objects_hit.append(box)
+                    objects_hit.append(box.uid)
                     self.players[player_uid].score += 1
 
             for player in self.players.values():
                 if pos == [player.x, player.y]:
-                    objects_hit.append(player)
+                    objects_hit.append(player_uid)
                     if self.players[player_uid] != player:
                         self.players[player_uid].score += 10
 
