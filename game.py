@@ -12,7 +12,7 @@ class Player():
         self.bombs = [Bomb() for _ in range(self.bombs_amount)]
         self.score = 0
 
-    def set_player_pos(self, x:int, y:int, walls, boxes):
+    def set_player_pos(self, x:int, y:int, walls, boxes, gifts):
         flag = True
         for box in boxes:
             if [x, y] == box.pos:
@@ -22,6 +22,12 @@ class Player():
         if [x, y] not in walls and flag:
             self.x = x
             self.y = y
+
+        for gift in gifts:
+            if [x, y] == gift.pos:
+                return self.gift_picked_msg(gift.uid)
+
+        return None
 
     def decrease_bombs(self):
         if self.bombs:
@@ -73,6 +79,14 @@ class Player():
         }
 
         return json.dumps(current_score_message)
+
+    def gift_picked_msg(self, gift_uid):
+        gift_picked_message = {
+            "msg_code": "gift_picked",
+            "gift_uid": gift_uid
+        }
+
+        return json.dumps(gift_picked_message)
 
     def __str__(self):
         return "PLAYER => |NICK: " + self.nick + "| |POS: (" + str(self.x) + ", " + str(self.y) + ")| |SCORE: " + str(self.score) + "|"
