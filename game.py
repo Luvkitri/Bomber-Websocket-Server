@@ -193,7 +193,7 @@ class Game():
             "x_range": bomb.range_x,
             "y_range": bomb.range_y,
             "bomb_uid": bomb.uid,
-            "objects_hit": json.dumps(objects_hit, default=self.obj_dict)
+            "objects_hit": objects_hit
         }
 
         return json.dumps(explosion_message), players_hit
@@ -241,6 +241,12 @@ class Game():
         return obj.__dict__
 
     def create_welcome_msg(self, nick:str, uid, bombs_amount:int):
+        box_list = []
+        gift_list = []
+        for box, gift in zip(self.boxes, self.gifts):
+            box_list.append(box.asdict())
+            gift_list.append(gift.asdict())
+
         welcome_message = {
             "msg_code": "welcome_msg",
             "map_size_x": self.map_size_x,
@@ -248,10 +254,8 @@ class Game():
             "client_uid": uid,
             "bombs_amount": bombs_amount,
             "current_score": 0,
-            "box": json.dumps(self.boxes, default=self.obj_dict),
-            "gifts": json.dumps(self.gifts, default=self.obj_dict)
+            "box": box_list,
+            "gifts": gift_list
         }
-        
-        print(json.dumps(welcome_message, default=self.obj_dict))
 
         return json.dumps(welcome_message)    
