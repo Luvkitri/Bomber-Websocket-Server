@@ -94,6 +94,9 @@ class Player():
 
         return json.dumps(gift_picked_message)
 
+    def asdict(self):
+        return { 'nick': self.nick, 'x': self.x, 'y': self.y }
+
     def __str__(self):
         return "PLAYER => |NICK: " + self.nick + "| |POS: (" + str(self.x) + ", " + str(self.y) + ")| |SCORE: " + str(self.score) + "|"
 
@@ -102,11 +105,17 @@ class Box():
         self.uid = str(uuid.uuid4())
         self.pos = [x, y]
 
+    def asdict(self):
+        return { 'uid': self.uid, 'pos': self.pos }
+
 class Gift():
     def __init__(self, x:int, y:int, gift_type:str):
         self.uid = str(uuid.uuid4())
         self.type = gift_type
         self.pos = [x, y]
+
+    def asdict(self):
+        return { 'uid': self.uid, 'type': self.type,'pos': self.pos }
 
 class Bomb():
     def __init__(self, x:int=None, y:int=None):
@@ -119,6 +128,9 @@ class Bomb():
 
     def set_bomb_pos(self, x:int=None, y:int=None):
         self.pos = [x, y]
+
+    def asdict(self):
+        return { 'uid': self.uid, 'range_x': self.range_x,'range_y': self.range_y }
 
     def __str__(self):
         return "BOMB => |UID: {0}| |POS: ({1}, {2})| |X_RANGE: {3}| |Y_RANGE: {4}|".format(self.uid, self.pos[0], self.pos[1], self.range_x, self.range_y)
