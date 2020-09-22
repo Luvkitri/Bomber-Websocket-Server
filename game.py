@@ -31,7 +31,6 @@ class Player():
         return None
 
     def set_player_pos_dead(self, x:int, y:int):
-        print("test")
         self.x = x
         self.y = y
 
@@ -172,7 +171,7 @@ class Game():
 
             for player in self.players.values():
                 if pos == [player.x, player.y]:
-                    objects_hit.append(player_uid)
+                    objects_hit.append(player.nick)
                     players_hit.append(player_uid)
                     if self.players[player_uid] != player:
                         self.players[player_uid].score += 10
@@ -241,4 +240,6 @@ class Game():
             "gifts": json.dumps(self.gifts, default=self.obj_dict)
         }
         
+        print(json.dumps(welcome_message, default=self.obj_dict))
+
         return json.dumps(welcome_message)    
