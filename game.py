@@ -11,6 +11,7 @@ class Player():
         self.bombs_amount = 3
         self.bombs = [Bomb() for _ in range(self.bombs_amount)]
         self.score = 0
+        self.dead = False
 
     def set_player_pos(self, x:int, y:int, walls, boxes, gifts):
         flag = True
@@ -158,8 +159,6 @@ class Game():
         objects_hit = []
         positions_hit = []
 
-        players_hit = []
-
         blast = {
             "up": [[bomb.pos[0], bomb.pos[1] + i] for i in range(1, bomb.range_y + 1)],
             "down": [[bomb.pos[0], bomb.pos[1] + i] for i in range(-1, -bomb.range_y - 1, -1)],
@@ -181,11 +180,11 @@ class Game():
                     objects_hit.append(box.uid)
                     self.players[player_uid].score += 1
 
-            for player in self.players.values():
-                if pos == [player.x, player.y]:
-                    objects_hit.append(player.nick)
-                    players_hit.append(player_uid)
-                    if self.players[player_uid] != player:
+            for alive_player in [player for player in self.players.values() if not player.dead]:
+                if pos == [alive_player.x, alive_player.y]:
+                    objects_hit.append(alive_player.nick)
+                    alive_player.dead = True
+                    if self.players[player_uid] != alive_player:
                         self.players[player_uid].score += 10
                         
         explosion_message = {
@@ -196,7 +195,7 @@ class Game():
             "objects_hit": objects_hit
         }
 
-        return json.dumps(explosion_message), players_hit
+        return json.dumps(explosion_message)
 
     def generate_boxes(self):
         boxes = []
