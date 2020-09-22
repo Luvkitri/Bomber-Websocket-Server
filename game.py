@@ -14,20 +14,21 @@ class Player():
         self.dead = False
 
     def set_player_pos(self, x:int, y:int, walls, boxes, gifts):
-        flag = True
-        for box in boxes:
-            if [x, y] == box.pos:
-                flag = False
-                break
-        
-        if [x, y] not in walls and flag:
-            self.x = x
-            self.y = y
+        if not self.dead:
+            flag = True
+            for box in boxes:
+                if [x, y] == box.pos:
+                    flag = False
+                    break
+            
+            if [x, y] not in walls and flag:
+                self.x = x
+                self.y = y
 
-        for gift in gifts:
-            if [x, y] == gift.pos:
-                gifts.remove(gift)
-                return self.gift_picked_msg(gift.uid)
+            for gift in gifts:
+                if [x, y] == gift.pos:
+                    gifts.remove(gift)
+                    return self.gift_picked_msg(gift.uid)
 
         return None
 
