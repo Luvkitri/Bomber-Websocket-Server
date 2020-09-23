@@ -243,8 +243,11 @@ class Game():
     def create_welcome_msg(self, nick:str, uid, bombs_amount:int):
         box_list = []
         gift_list = []
-        for box, gift in zip(self.boxes, self.gifts):
+
+        for box in self.boxes:
             box_list.append(box.asdict())
+
+        for gift in self.gifts:
             gift_list.append(gift.asdict())
 
         welcome_message = {
@@ -257,5 +260,7 @@ class Game():
             "box": box_list,
             "gifts": gift_list
         }
+
+        print(welcome_message)
 
         return json.dumps(welcome_message)    
