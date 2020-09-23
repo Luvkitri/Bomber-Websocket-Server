@@ -11,22 +11,24 @@ class Player():
         self.bombs_amount = 3
         self.bombs = [Bomb() for _ in range(self.bombs_amount)]
         self.score = 0
+        self.dead = False
 
     def set_player_pos(self, x:int, y:int, walls, boxes, gifts):
-        flag = True
-        for box in boxes:
-            if [x, y] == box.pos:
-                flag = False
-                break
-        
-        if [x, y] not in walls and flag:
-            self.x = x
-            self.y = y
+        if not self.dead:
+            flag = True
+            for box in boxes:
+                if [x, y] == box.pos:
+                    flag = False
+                    break
+            
+            if [x, y] not in walls and flag:
+                self.x = x
+                self.y = y
 
-        for gift in gifts:
-            if [x, y] == gift.pos:
-                gifts.remove(gift)
-                return self.gift_picked_msg(gift.uid)
+            for gift in gifts:
+                if [x, y] == gift.pos:
+                    gifts.remove(gift)
+                    return self.gift_picked_msg(gift.uid)
 
         return None
 
@@ -94,6 +96,9 @@ class Player():
 
         return json.dumps(gift_picked_message)
 
+    def asdict(self):
+        return { 'nick': self.nick, 'x': self.x, 'y': self.y }
+
     def __str__(self):
         return "PLAYER => |NICK: " + self.nick + "| |POS: (" + str(self.x) + ", " + str(self.y) + ")| |SCORE: " + str(self.score) + "|"
 
@@ -102,11 +107,17 @@ class Box():
         self.uid = str(uuid.uuid4())
         self.pos = [x, y]
 
+    def asdict(self):
+        return { 'uid': self.uid, 'pos': self.pos }
+
 class Gift():
     def __init__(self, x:int, y:int, gift_type:str):
         self.uid = str(uuid.uuid4())
         self.type = gift_type
         self.pos = [x, y]
+
+    def asdict(self):
+        return { 'uid': self.uid, 'type': self.type,'pos': self.pos }
 
 class Bomb():
     def __init__(self, x:int=None, y:int=None):
@@ -119,6 +130,9 @@ class Bomb():
 
     def set_bomb_pos(self, x:int=None, y:int=None):
         self.pos = [x, y]
+
+    def asdict(self):
+        return { 'uid': self.uid, 'range_x': self.range_x,'range_y': self.range_y }
 
     def __str__(self):
         return "BOMB => |UID: {0}| |POS: ({1}, {2})| |X_RANGE: {3}| |Y_RANGE: {4}|".format(self.uid, self.pos[0], self.pos[1], self.range_x, self.range_y)
@@ -146,8 +160,6 @@ class Game():
         objects_hit = []
         positions_hit = []
 
-        players_hit = []
-
         blast = {
             "up": [[bomb.pos[0], bomb.pos[1] + i] for i in range(1, bomb.range_y + 1)],
             "down": [[bomb.pos[0], bomb.pos[1] + i] for i in range(-1, -bomb.range_y - 1, -1)],
@@ -169,11 +181,11 @@ class Game():
                     objects_hit.append(box.uid)
                     self.players[player_uid].score += 1
 
-            for player in self.players.values():
-                if pos == [player.x, player.y]:
-                    objects_hit.append(player.nick)
-                    players_hit.append(player_uid)
-                    if self.players[player_uid] != player:
+            for alive_player in [player for player in self.players.values() if not player.dead]:
+                if pos == [alive_player.x, alive_player.y]:
+                    objects_hit.append(alive_player.nick)
+                    alive_player.dead = True
+                    if self.players[player_uid] != alive_player:
                         self.players[player_uid].score += 10
                         
         explosion_message = {
@@ -181,10 +193,10 @@ class Game():
             "x_range": bomb.range_x,
             "y_range": bomb.range_y,
             "bomb_uid": bomb.uid,
-            "objects_hit": json.dumps(objects_hit, default=self.obj_dict)
+            "objects_hit": objects_hit
         }
 
-        return json.dumps(explosion_message), players_hit
+        return json.dumps(explosion_message)
 
     def generate_boxes(self):
         boxes = []
@@ -229,6 +241,12 @@ class Game():
         return obj.__dict__
 
     def create_welcome_msg(self, nick:str, uid, bombs_amount:int):
+        box_list = []
+        gift_list = []
+        for box, gift in zip(self.boxes, self.gifts):
+            box_list.append(box.asdict())
+            gift_list.append(gift.asdict())
+
         welcome_message = {
             "msg_code": "welcome_msg",
             "map_size_x": self.map_size_x,
@@ -236,10 +254,8 @@ class Game():
             "client_uid": uid,
             "bombs_amount": bombs_amount,
             "current_score": 0,
-            "box": json.dumps(self.boxes, default=self.obj_dict),
-            "gifts": json.dumps(self.gifts, default=self.obj_dict)
+            "box": box_list,
+            "gifts": gift_list
         }
-        
-        print(json.dumps(welcome_message, default=self.obj_dict))
 
         return json.dumps(welcome_message)    

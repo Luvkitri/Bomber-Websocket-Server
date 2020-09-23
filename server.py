@@ -81,13 +81,8 @@ class Server():
         self.game.players.pop(data['uid'])
     
     async def bomb_exploded(self, bomb, player_uid):
-        message, players_hit = self.game.handle_explosion(bomb, player_uid)
+        message = self.game.handle_explosion(bomb, player_uid)
         print(f'Bomb {bomb.uid} has exploded')
-
-        if players_hit:
-            for player_uid in players_hit:
-                self.game.players[player_uid].set_player_pos_dead(1000, 1000)
-                await self.notify_players(self.game.players[player_uid].pos_msg())
 
         await self.notify_players(message)
         
