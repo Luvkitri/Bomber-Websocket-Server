@@ -261,6 +261,4 @@ class Game():
             "gifts": gift_list
         }
 
-        print(welcome_message)
-
         return json.dumps(welcome_message)    
